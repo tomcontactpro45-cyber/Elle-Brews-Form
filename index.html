@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Candidature Chatteur — Elle Brews</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #1A4731; --green-l: #ECFDF5; --green-d: #0F2B1E;
+  --earth: #5C3D1A; --earth-l: #FDF6EC;
+  --teal: #0F6E56; --teal-l: #E1F5EE;
+  --red: #A32D2D; --red-l: #FCEBEB;
+  --purple: #5B21B6; --purple-l: #EDE9FE;
+  --gray: #444441; --gray-l: #F1EFE8;
+  --bg: #F9FAF8; --card: #FFFFFF; --border: rgba(0,0,0,0.08);
+  --text: #1A1A1A; --muted: #6B6B68; --hint: #9E9E9A;
+  --radius: 12px; --radius-sm: 8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.6}
+.shell{max-width:640px;margin:0 auto;padding:2rem 1.25rem 4rem}
+.brand{text-align:center;margin-bottom:2.5rem;padding-top:1rem}
+.brand-emoji{font-size:28px;margin-bottom:.5rem}
+.brand-name{font-family:'DM Serif Display',serif;font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:var(--green);margin-bottom:.5rem}
+.brand-line{width:40px;height:1px;background:var(--green);margin:0 auto}
+.page{display:none}
+.page.active{display:block;animation:fadeIn .35s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.step-nav{display:flex;align-items:center;gap:0;margin-bottom:2rem}
+.step{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--hint);transition:color .2s}
+.step.active{color:var(--green)}
+.step.done{color:var(--teal)}
+.step-dot{width:24px;height:24px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;transition:all .2s}
+.step.active .step-dot{background:var(--green);border-color:var(--green);color:#fff}
+.step.done .step-dot{background:var(--teal);border-color:var(--teal);color:#fff}
+.step-line{flex:1;height:1px;background:var(--border);margin:0 10px}
+.page-header{margin-bottom:2rem}
+.page-title{font-family:'DM Serif Display',serif;font-size:28px;color:var(--text);margin-bottom:.4rem;line-height:1.2}
+.page-sub{font-size:14px;color:var(--muted);line-height:1.6}
+.field{margin-bottom:1.5rem}
+.label{font-size:14px;font-weight:500;color:var(--text);margin-bottom:.375rem;display:block}
+.sub-label{font-size:12px;color:var(--hint);margin-bottom:.5rem;display:block}
+textarea{width:100%;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;outline:none;resize:vertical;transition:border-color .2s,box-shadow .2s;line-height:1.6;min-height:90px}
+textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(26,71,49,.1)}
+.quiz-q{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem}
+.quiz-num{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--hint);margin-bottom:.5rem}
+.quiz-text{font-size:15px;font-weight:500;color:var(--text);margin-bottom:1rem;line-height:1.5}
+.quiz-opts{display:flex;flex-direction:column;gap:8px}
+.quiz-opt{padding:10px 14px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--bg);font-size:14px;color:var(--text);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;text-align:left}
+.quiz-opt:hover:not(:disabled){border-color:var(--green);background:var(--green-l)}
+.quiz-opt.correct{background:#DCFCE7;border-color:#166534;color:#166534;font-weight:500}
+.quiz-opt.wrong{background:var(--red-l);border-color:var(--red);color:var(--red)}
+.quiz-opt.reveal{background:#DCFCE7;border-color:#166534;color:#166534}
+.quiz-feedback{margin-top:.75rem;font-size:13px;padding:8px 12px;border-radius:var(--radius-sm);display:none}
+.quiz-feedback.show{display:block}
+.quiz-feedback.ok{background:#DCFCE7;color:#166534}
+.quiz-feedback.bad{background:var(--red-l);color:var(--red)}
+.score-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:99px;font-size:14px;font-weight:600;margin-top:1rem}
+.score-badge.pass{background:var(--green-l);color:var(--green)}
+.score-badge.fail{background:var(--red-l);color:var(--red)}
+.info-card{background:var(--green-l);border:1px solid rgba(26,71,49,.15);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.25rem}
+.info-card-title{font-size:12px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem}
+.info-card-body{font-size:13px;color:var(--gray);line-height:1.65}
+.info-card-body strong{color:var(--green-d)}
+.rule-tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;margin-right:4px;margin-bottom:4px}
+.rule-tag.green{background:var(--green-l);color:var(--green)}
+.rule-tag.red{background:var(--red-l);color:var(--red)}
+.btn-row{display:flex;justify-content:space-between;align-items:center;margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border)}
+.btn-back{font-size:13px;padding:9px 18px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-next{font-size:13px;padding:9px 22px;border-radius:var(--radius-sm);background:var(--green);color:#fff;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;display:flex;align-items:center;gap:6px;transition:all .15s}
+.btn-next:hover{background:var(--green-d)}
+.btn-next:disabled{opacity:.4;cursor:not-allowed}
+.btn-submit{font-size:14px;padding:12px 28px;border-radius:var(--radius);background:var(--green);color:#fff;border:none;cursor:pointer;font-family:'DM Serif Display',serif;font-weight:400;font-style:italic;width:100%;margin-top:1rem;letter-spacing:.02em;transition:background .15s}
+.btn-submit:hover{background:var(--green-d)}
+.error-msg{font-size:12px;color:var(--red);margin-top:.35rem;display:none}
+.error-msg.show{display:block}
+.field.err textarea{border-color:var(--red)}
+.success-wrap{text-align:center;padding:3rem 1rem}
+.success-icon{font-size:48px;margin-bottom:1rem}
+.success-title{font-family:'DM Serif Display',serif;font-size:26px;color:var(--text);margin-bottom:.5rem}
+.success-sub{font-size:14px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="brand">
+    <div class="brand-emoji">🌲</div>
+    <div class="brand-name">AUDELON Consulting</div>
+    <div class="brand-line"></div>
+  </div>
+
+  <!-- PAGE 1 — BRIEF -->
+  <div class="page active" id="p1">
+    <div class="step-nav">
+      <div class="step active"><div class="step-dot">1</div></div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-dot">2</div></div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-dot">3</div></div>
+    </div>
+    <div class="page-header">
+      <div class="page-title">Rencontre Elle Brews</div>
+      <div class="page-sub">Lis attentivement cette page avant le quiz. Tout ce que tu dois savoir est ici.</div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">🏔️ Qui est Elle Brews ?</div>
+      <div class="info-card-body">
+        <strong>Elle Brews</strong>, 24 ans — <strong>Vancouver, Washington</strong> (Pacific Northwest).<br>
+        Origines <strong>norvégiennes</strong>. Fille outdoor / randonneuse.<br><br>
+        Elle fait des randonnées, joue au volleyball et au basketball, et adore le style de vie PNW. Son chat s'appelle <strong>Scout</strong>. Elle est naturellement confiante et chaleureuse — pas timide, pas agressive. Quelque part entre les deux.<br><br>
+        Son image publique sur Instagram est wholesome et outdoor. Son contenu OF est très explicite. <strong>Ce contraste est sa plus grande force.</strong>
+      </div>
+    </div>
+
+    <div class="info-card" style="background:var(--earth-l);border-color:rgba(92,61,26,.15)">
+      <div class="info-card-title" style="color:var(--earth)">⚡ Règles d'or</div>
+      <div class="info-card-body">
+        <span class="rule-tag green">Jamais de non</span> Toujours rediriger — "pas pour l'instant mais peut-être…"<br>
+        <span class="rule-tag green">Être Elle</span> Naturelle, chill PNW, confiante mais jamais froide<br>
+        <span class="rule-tag green">Anglais uniquement</span> Ne jamais laisser entendre qu'elle parle une autre langue<br>
+        <span class="rule-tag red">Signal d'alarme</span> "tu sembles différente" → STOP → escalader immédiatement<br>
+        <span class="rule-tag red">Zéro infos perso</span> Jamais révéler la vraie localisation ou des détails personnels
+      </div>
+    </div>
+
+    <div class="info-card" style="background:var(--purple-l);border-color:rgba(91,33,182,.15)">
+      <div class="info-card-title" style="color:var(--purple)">📋 Contenu proposé par Elle</div>
+      <div class="info-card-body">
+        Bikini · Lingerie · Feet · Fesses · Voice notes · Poitrine · Full nude · Dick rates · Girl-Girl · Boy-Girl · Anal · JOI · Twerk · <strong>Appels vidéo ✓</strong> · Customs ✓ · Live ✓
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <div></div>
+      <button class="btn-next" onclick="go(2)">Commencer le Quiz →</button>
+    </div>
+  </div>
+
+  <!-- PAGE 2 — QUIZ -->
+  <div class="page" id="p2">
+    <div class="step-nav">
+      <div class="step done"><div class="step-dot">✓</div></div>
+      <div class="step-line"></div>
+      <div class="step active"><div class="step-dot">2</div></div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-dot">3</div></div>
+    </div>
+    <div class="page-header">
+      <div class="page-title">Quiz de connaissance</div>
+      <div class="page-sub">10 questions sur le persona d'Elle. Il faut 8/10 pour continuer.</div>
+    </div>
+
+    <div class="quiz-q" id="q1">
+      <div class="quiz-num">1 / 10</div>
+      <div class="quiz-text">Quelle est la niche principale d'Elle / son persona public ?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="ans(1,this,false)">Gym & fitness girl</button>
+        <button class="quiz-opt" onclick="ans(1,this,true)">Fille outdoor / randonneuse — Pacific Northwest</button>
+        <button class="quiz-opt" onclick="ans(1,this,false)">Étudiante</button>
+        <button class="quiz-opt" onclick="ans(1,this,false)">Barista / café girl</button>
+      </div>
+      <div class="quiz-feedback" id="f1"></div>
+    </div>
+
+    <div class="quiz-q" id="q2">
+      <div class="quiz-num">2 / 10</div>
+      <div class="quiz-text">Où est basée Elle ?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="ans(2,this,false)">Seattle, Washington</button>
+        <button class="quiz-opt" onclick="ans(2,this,false)">Portland, Oregon</button>
+        <button class="quiz-opt" onclick="ans(2,this,true)">Vancouver, Washington</button>
+        <button class="quiz-opt" onclick="ans(2,this,false)">Los Angeles, Californie</button>
+      </div>
+      <div class="quiz-feedback" id="f2"></div>
+    </div>
+
+    <div class="quiz-q" id="q3">
+      <div class="quiz-num">3 / 10</div>
+      <div class="quiz-text">Quelles sont les origines ethniques d'Elle ?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="ans(3,this,false)">Suédoise</button>
+        <button class="quiz-opt" onclick="ans(3,this,false)">Danoise</button>
+        <button class="quiz-opt" onclick="ans(3,this,true)">Norvégienne</button>
+        <button class="quiz-opt" onclick="ans(3,this,false)">Finlandaise</button>
+      </div>
+      <div class="quiz-feedback" id="f3"></div>
+    </div>
+
+    <div class="quiz-q" id="q4">
+      <div class="quiz-num">4 / 10</div>
+      <div class="quiz-text">Comment s'appelle le chat d'Elle ?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="ans(4,this,false)">Bear</button>
+        <button class="quiz-opt" onclick="ans(4,this,true)">Scout</button>
+        <button class="quiz-opt" onclick="ans(4,this,false)">Kodak</button>
+        <button class="quiz-opt" onclick="ans(4,this,false)">Trail</button>
+      </div>
+      <div class="quiz-feedback" id="f4"></div>
+    </div>
+
+    <div class="quiz-q" id="q5">
+      <div class="quiz-num">5 / 10</div>
+      <div class="quiz-text">Un abonné demande quelque chose qu'Elle ne propose pas. Que dis-tu ?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="ans(5,this,false)">"Non, je ne fais pas ça."</button>
+        <button class="quiz-opt" onclick="ans(5,this,false)">"Désolée, c'est impossible."</button>
+        <button class="quiz-opt" onclick="ans(5,this,true)">"hmm c'est pas vraiment quelque chose que je fais pour l'instant 😊 mais honnêtement je pense que tu adorerais [alternative] — tu veux voir ?"</button>
+        <button class="quiz-opt" onclick="ans(5,this,false)">"J'y réfléchirai peut-être plus tard."</button>
+      </div>
+      <div class="quiz-feedback" id="f5"></div>
+    </div>
+
+    <div class="quiz-q" id="q6">
+      <div class="quiz-num">6 / 10</div>
+      <div class="quiz-text">Un abonné dit : "tu sembles vraiment différente aujourd'hui, tu ne ressembles pas à Elle du tout." Que fais-tu ?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="ans(6,this,false)">Essayer de rattraper la situation et continuer</button>
+        <button class="quiz-opt" onclick="ans(6,this,false)">Dire qu'Elle est fatiguée ou malade aujourd'hui</button>
+        <button class="quiz-opt" onclick="ans(6,this,true)">STOPPER immédiatement et escalader à l'agence — c'est un signal d'alarme critique</button>
+        <button class="quiz-opt" onclick="ans(6,this,false)">Changer de sujet rapidement</button>
+      </div>
+      <div class="quiz-feedback" id="f6"></div>
+    </div>
+
+    <div class="quiz-q" id="q7">
+      <div class="quiz-num">7 / 10</div>
+      <div class="quiz-text">Est-ce qu'Elle accepte les appels vidéo ?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="ans(7,this,false)">Non, jamais</button>
+        <button class="quiz-opt" onclick="ans(7,this,true)">Oui</button>
+        <button class="quiz-opt" onclick="ans(7,this,false)">Uniquement les appels audio</button>
+        <button class="quiz-opt" onclick="ans(7,this,false)">Seulement pour les top abonnés</button>
+      </div>
+      <div class="quiz-feedback" id="f7"></div>
+    </div>
+
+    <div class="quiz-q" id="q8">
+      <div class="quiz-num">8 / 10</div>
+      <div class="quiz-text">Un abonné écrit à Elle en français. Que fais-tu ?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="ans(8,this,false)">Répondre en français</button>
+        <button class="quiz-opt" onclick="ans(8,this,true)">Répondre en anglais uniquement — ne jamais laisser entendre qu'elle parle une autre langue</button>
+        <button class="quiz-opt" onclick="ans(8,this,false)">Dire "sorry I don't understand French"</button>
+        <button class="quiz-opt" onclick="ans(8,this,false)">Demander d'où il vient d'abord</button>
+      </div>
+      <div class="quiz-feedback" id="f8"></div>
+    </div>
+
+    <div class="quiz-q" id="q9">
+      <div class="quiz-num">9 / 10</div>
+      <div class="quiz-text">Quels sports pratique Elle ?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="ans(9,this,false)">Natation et tennis</button>
+        <button class="quiz-opt" onclick="ans(9,this,false)">Gym et yoga</button>
+        <button class="quiz-opt" onclick="ans(9,this,true)">Volleyball, basketball et randonnée</button>
+        <button class="quiz-opt" onclick="ans(9,this,false)">Football et course à pied</button>
+      </div>
+      <div class="quiz-feedback" id="f9"></div>
+    </div>
+
+    <div class="quiz-q" id="q10">
+      <div class="quiz-num">10 / 10</div>
+      <div class="quiz-text">Quelle est la force principale du persona d'Elle sur le marché US ?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="ans(10,this,false)">Elle est très timide et innocente</button>
+        <button class="quiz-opt" onclick="ans(10,this,false)">Elle a le plus grand nombre de followers</button>
+        <button class="quiz-opt" onclick="ans(10,this,true)">Le contraste entre son image publique wholesome outdoor et son contenu OF très explicite</button>
+        <button class="quiz-opt" onclick="ans(10,this,false)">Elle parle plusieurs langues</button>
+      </div>
+      <div class="quiz-feedback" id="f10"></div>
+    </div>
+
+    <div id="quiz-result" style="display:none;margin-top:1.5rem"></div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="go(1)">← Retour</button>
+      <button class="btn-next" id="btn-quiz-next" onclick="go(3)" disabled>Continuer →</button>
+    </div>
+  </div>
+
+  <!-- PAGE 3 — SCÉNARIOS -->
+  <div class="page" id="p3">
+    <div class="step-nav">
+      <div class="step done"><div class="step-dot">✓</div></div>
+      <div class="step-line"></div>
+      <div class="step done"><div class="step-dot">✓</div></div>
+      <div class="step-line"></div>
+      <div class="step active"><div class="step-dot">3</div></div>
+    </div>
+    <div class="page-header">
+      <div class="page-title">Test de scénarios</div>
+      <div class="page-sub">Réponds comme Elle Brews. Sois naturel(le) — sonne comme elle, pas comme un script.</div>
+    </div>
+
+    <form id="appForm" action="https://formspree.io/f/FORMSPREE_ID" method="POST">
+      <input type="hidden" name="persona" value="Elle Brews">
+      <input type="hidden" id="quiz-score-input" name="quiz_score" value="">
+
+      <div class="field" id="f-s1">
+        <label class="label">Un nouvel abonné vient de s'abonner. Écris ton premier message en tant qu'Elle. <span style="color:var(--red)">*</span></label>
+        <span class="sub-label">Chaleureux, naturel, énergie PNW. Elle s'intéresse à qui ils sont.</span>
+        <textarea name="scenario_bienvenue" placeholder="Écris ici..."></textarea>
+        <div class="error-msg">Ce champ est obligatoire</div>
+      </div>
+
+      <div class="field" id="f-s2">
+        <label class="label">Un abonné dit : "j'adore tes photos de rando, tu randonnes souvent ?" — Réponds en tant qu'Elle. <span style="color:var(--red)">*</span></label>
+        <span class="sub-label">Reste dans l'univers PNW. Sois spécifique et authentique.</span>
+        <textarea name="scenario_rando" placeholder="Écris ici..."></textarea>
+        <div class="error-msg">Ce champ est obligatoire</div>
+      </div>
+
+      <div class="field" id="f-s3">
+        <label class="label">Un abonné demande : "attends t'es vraiment norvégienne ? c'est quoi ça ?" — Réponds en tant qu'Elle. <span style="color:var(--red)">*</span></label>
+        <span class="sub-label">Utilise ses origines naturellement. Rends ça intriguant.</span>
+        <textarea name="scenario_norvegienne" placeholder="Écris ici..."></textarea>
+        <div class="error-msg">Ce champ est obligatoire</div>
+      </div>
+
+      <div class="field" id="f-s4">
+        <label class="label">Un abonné demande quelque chose qu'Elle ne propose pas. Écris ta réponse. <span style="color:var(--red)">*</span></label>
+        <span class="sub-label">Ne jamais dire non directement. Rediriger avec élégance.</span>
+        <textarea name="scenario_redirection" placeholder="Écris ici..."></textarea>
+        <div class="error-msg">Ce champ est obligatoire</div>
+      </div>
+
+      <div class="field" id="f-s5">
+        <label class="label">Un abonné dit : "tu sembles différente aujourd'hui, ça va ?" — Que fais-tu ? <span style="color:var(--red)">*</span></label>
+        <span class="sub-label">C'est peut-être un signal d'alarme. Décris ta réaction exacte.</span>
+        <textarea name="scenario_alarme" placeholder="Décris ce que tu fais étape par étape..."></textarea>
+        <div class="error-msg">Ce champ est obligatoire</div>
+      </div>
+
+      <div class="field" id="f-s6">
+        <label class="label">Pitch un PPV à un abonné en utilisant l'angle outdoor d'Elle. <span style="color:var(--red)">*</span></label>
+        <span class="sub-label">Utilise le contraste entre son image publique et son contenu OF.</span>
+        <textarea name="scenario_ppv" placeholder="Écris ton pitch ici..."></textarea>
+        <div class="error-msg">Ce champ est obligatoire</div>
+      </div>
+
+      <button type="button" class="btn-submit" onclick="submitForm()">Envoyer ma candidature 🌲</button>
+    </form>
+
+    <div style="margin-top:.75rem">
+      <button class="btn-back" onclick="go(2)" style="width:100%;justify-content:center;display:flex">← Retour au Quiz</button>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="page" id="psuccess">
+    <div class="success-wrap">
+      <div class="success-icon">🌲</div>
+      <div class="success-title">Candidature reçue !</div>
+      <div class="success-sub">On va examiner tes réponses et revenir vers toi dans les 48 heures.<br><br>Merci d'avoir postulé pour l'équipe Elle Brews.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+var answers={}, scores={};
+function go(n){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+  document.getElementById(n==='success'?'psuccess':'p'+n).classList.add('active');
+  window.scrollTo(0,0);
+}
+function ans(q,btn,correct){
+  var qel=document.getElementById('q'+q);
+  if(qel.dataset.answered) return;
+  qel.dataset.answered='1';
+  qel.querySelectorAll('.quiz-opt').forEach(function(o){o.disabled=true});
+  var fb=document.getElementById('f'+q);
+  if(correct){
+    btn.classList.add('correct');
+    fb.className='quiz-feedback show ok';
+    fb.textContent='✓ Correct !';
+    scores[q]=1;
+  } else {
+    btn.classList.add('wrong');
+    fb.className='quiz-feedback show bad';
+    fb.textContent='✗ Incorrect — la bonne réponse est surlignée ci-dessus.';
+    qel.querySelectorAll('.quiz-opt').forEach(function(o){
+      if(o.getAttribute('onclick').includes(',true)')) o.classList.add('reveal');
+    });
+    scores[q]=0;
+  }
+  answers[q]=correct;
+  checkDone();
+}
+function checkDone(){
+  if(Object.keys(answers).length<10) return;
+  var total=0;
+  for(var k in scores) total+=scores[k];
+  var res=document.getElementById('quiz-result');
+  res.style.display='block';
+  document.getElementById('quiz-score-input').value=total+'/10';
+  if(total>=8){
+    res.innerHTML='<span class="score-badge pass">✓ '+total+'/10 — Réussi ! Passe aux scénarios.</span>';
+    document.getElementById('btn-quiz-next').disabled=false;
+  } else {
+    res.innerHTML='<span class="score-badge fail">✗ '+total+'/10 — Score insuffisant. Relis le brief et réessaie dans quelques secondes.</span>';
+    setTimeout(function(){
+      for(var k in answers){delete answers[k];delete scores[k];}
+      document.querySelectorAll('.quiz-q').forEach(function(q){
+        delete q.dataset.answered;
+        q.querySelectorAll('.quiz-opt').forEach(function(o){o.disabled=false;o.className='quiz-opt';});
+        var fb=q.querySelector('.quiz-feedback');
+        fb.className='quiz-feedback';fb.textContent='';
+      });
+      res.style.display='none';
+    },4000);
+  }
+}
+function submitForm(){
+  var ok=true;
+  ['f-s1','f-s2','f-s3','f-s4','f-s5','f-s6'].forEach(function(id){
+    var el=document.getElementById(id);
+    var ta=el.querySelector('textarea');
+    var err=el.querySelector('.error-msg');
+    if(!ta.value.trim()){el.classList.add('err');err.classList.add('show');ok=false;}
+    else{el.classList.remove('err');err.classList.remove('show');}
+  });
+  if(!ok){window.scrollTo(0,300);return;}
+  var form=document.getElementById('appForm');
+  fetch(form.action,{method:'POST',body:new FormData(form),headers:{'Accept':'application/json'}})
+    .then(function(r){
+      if(r.ok){go('success');}
+      else{alert('Une erreur est survenue. Réessaie.');}
+    })
+    .catch(function(){alert('Erreur réseau. Vérifie ta connexion.');});
+}
+</script>
+</body>
+</html>
